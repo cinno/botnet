@@ -9,6 +9,22 @@
 #include <netdb.h>
 #include <sys/utsname.h>
 #include <time.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+#include <netinet/ip.h>
+
+struct pseudo_header
+{
+    unsigned int source_address;
+    unsigned int dest_address;
+    unsigned char placeholder;
+    unsigned char protocol;
+    unsigned short tcp_length;
+                           
+    struct tcphdr tcp;
+};
+
+unsigned 
 
 void error(const char *msg)
 {
@@ -18,11 +34,10 @@ void error(const char *msg)
 
 int main(int argc, char **argv)
 {
-   int client_len,sender_len;
+   int client_len;
    int client_sockfd;
    int sender_sockfd;
    int i;
-   int ret;
    int nread;
    int packet_num;
    char id[2];
@@ -60,6 +75,11 @@ int main(int argc, char **argv)
        perror("Connect error : ");
        exit(0);
    }
+
+   if((sender_sockfd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP)) < 0)
+       perror("socket error");
+
+
    strncpy(id,argv[1],2);
 
    write(client_sockfd,id,2);
@@ -148,21 +168,8 @@ int main(int argc, char **argv)
                temp = strtok(NULL," ");
                strncpy(ip_addr,temp,sizeof(ip_addr));
 
-               sender.sin_family = AF_INET;
-               sender.sin_addr.s_addr = inet_addr(ip_addr);
-               sender.sin_port = htons(80);
-               sprintf(packet_message,"hello");
 
-               if((sender_sockfd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP)) < 0)
-                   error("socket error");
-               for(i=0;i<packet_num;i++)
-               {
-                   if(ret = sendto(sender_sockfd,packet_message,sizeof(packet_message),0,(struct sockaddr *)&sender,sizeof(sender)) < 0)
-                       error("send error");
-               }
-               write(client_sockfd,"sending packet complete",23);
-           
-           }
+
        }
    }
    return 0;
