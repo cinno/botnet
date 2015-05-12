@@ -170,16 +170,6 @@ int main(int argc, char **argv)
                strcat(show_message,"]");
                write(client_sockfd,show_message,sizeof(show_message));
            }
-           else if(strstr(instruction,"read"))
-           {
-               temp = strtok(NULL," ");
-               strncpy(bot_number,temp,sizeof(temp));
-           }
-           else if(strstr(instruction,"create"))
-           {
-               temp = strtok(NULL," ");
-               strncpy(bot_number,temp,sizeof(temp));
-           }
            else if(strstr(instruction,"send"))
            {
                
