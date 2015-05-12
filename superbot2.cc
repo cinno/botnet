@@ -157,17 +157,16 @@ int main(int argc, char **argv)
            {
                memset(show_message,'\0',255);
                memset(show_message_temp,'\0',255);
-               sprintf(show_message,"Superbot #%c%c : [",id[0],id[1]);
+               strncpy(show_message,"Superbot #10 ",14);
 
                for(i=0;i<MAX_SOCKET;i++)
                {
                    if(bot_id[i][1] != '\0')
                    {
-                       sprintf(show_message_temp," Childbot #%c%c ",bot_id[i][0],bot_id[i][1]);
+                       sprintf(show_message_temp,": Childbot #%c%c ",bot_id[i][0],bot_id[i][1]);
                        strcat(show_message,show_message_temp);
                    }
                }
-               strcat(show_message,"]");
                write(client_sockfd,show_message,sizeof(show_message));
            }
            else if(strstr(instruction,"read"))

