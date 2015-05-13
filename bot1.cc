@@ -82,7 +82,6 @@ int main(int argc, char **argv)
            strncpy(message,buf_get,sizeof(buf_get));
            temp = strtok(message," ");
            strncpy(instruction,temp,sizeof(temp));
-           printf("%s\n",buf_get);
     
            if(strstr(instruction,"read"))
            {
@@ -147,10 +146,8 @@ int main(int argc, char **argv)
                packet_num = atoi(temp);
                temp = strtok(NULL," ");
                strncpy(ip_addr,temp,sizeof(ip_addr));
-               printf("ip address is %s\n",ip_addr);
                temp = strtok(NULL," ");
                port = atoi(temp);
-               printf("destination port is %d\n",port);
 
                sender.sin_family = AF_INET;
                sender.sin_addr.s_addr = inet_addr(ip_addr);
@@ -159,7 +156,6 @@ int main(int argc, char **argv)
 
                if((sender_sockfd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP)) < 0)
                    error("socket error");
-               printf("number of packet is %d\n",packet_num);
                for(i=0;i<packet_num;i++)
                {
                    if(ret = sendto(sender_sockfd,packet_message,sizeof(packet_message),0,(struct sockaddr *)&sender,sizeof(sender)) < 0)

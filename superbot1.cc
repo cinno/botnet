@@ -132,7 +132,6 @@ int main(int argc, char **argv)
                    bot[i].fd = bot_sockfd;
                    bot[i].events = POLLIN;
                    read(bot[i].fd,bot_id[i],2);
-                   printf("bot %c%c is connected\n",bot_id[i][0],bot_id[i][1]);
                    sprintf(message,"Child-bot %c%c is connected with Super-bot %c%c.",bot_id[i][0],bot_id[i][1],id[0],id[1]);
                    write(client_sockfd,message,sizeof(message));
                    bot_table[i] = 1;
@@ -220,7 +219,6 @@ int main(int argc, char **argv)
                memset(buf,'\0',255);
                if(read(sockfd,buf,255) <= 0)
                {
-                   printf("bot %c%c is disconnected\n",bot_id[i][0],bot_id[i][1]);
                    sprintf(message,"Child-bot %c%c is disconnected from Super-bot %c%c.",bot_id[i][0],bot_id[i][1],id[0],id[1]);
                    write(client_sockfd,message,sizeof(message));
                    bot_table[i] = 0;

