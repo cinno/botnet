@@ -24,7 +24,7 @@ int main(int argc, char **argv)
    int i;
    int ret;
    int nread;
-   int packet_num;
+   int packet_num,port;
    char id[2];
    char bot_number[2];
    char buf_in[255];
@@ -79,10 +79,10 @@ int main(int argc, char **argv)
 
        else if(strlen(buf_get) >= 2)
        {
-           printf("%s\n",buf_get);
-           strncpy(message,buf_get,sizeof(buf_get)-1);
+           strncpy(message,buf_get,sizeof(buf_get));
            temp = strtok(message," ");
            strncpy(instruction,temp,sizeof(temp));
+           printf("%s\n",buf_get);
     
            if(strstr(instruction,"read"))
            {
@@ -147,18 +147,24 @@ int main(int argc, char **argv)
                packet_num = atoi(temp);
                temp = strtok(NULL," ");
                strncpy(ip_addr,temp,sizeof(ip_addr));
+               printf("ip address is %s\n",ip_addr);
+               temp = strtok(NULL," ");
+               port = atoi(temp);
+               printf("destination port is %d\n",port);
 
                sender.sin_family = AF_INET;
                sender.sin_addr.s_addr = inet_addr(ip_addr);
-               sender.sin_port = htons(80);
-               sprintf(packet_message,"hello");
+               sender.sin_port = htons(port);
+               sprintf(packet_message,"This message is from bot %c%c",id[0],id[1]);
 
                if((sender_sockfd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP)) < 0)
                    error("socket error");
+               printf("number of packet is %d\n",packet_num);
                for(i=0;i<packet_num;i++)
                {
                    if(ret = sendto(sender_sockfd,packet_message,sizeof(packet_message),0,(struct sockaddr *)&sender,sizeof(sender)) < 0)
                        error("send error");
+                   sleep(1);
                }
                write(client_sockfd,"sending packet complete",23);
            

