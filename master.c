@@ -64,6 +64,7 @@ void *shell()
             printf("4) Send packet > send [number of packet] [target IP] [ target Port]\n");
             printf("5) Search bots > search [bot_number]\n");
             printf("6) Help > help\n");
+            printf("7) Exit > exit\n");
             printf("/**********************************/\n");
             printf("Examples : \n");
             printf("show\n");
@@ -71,6 +72,13 @@ void *shell()
             printf("create 25 /home/text.txt\n");
             printf("send 30 127.0.0.1 80\n");
             printf("search 37\n");
+        }
+        if(strstr(message,"exit"))
+        {
+            printf("Master is shutting down...\n");
+            for(i=1;i<MAX_SOCKET;i++)
+                close(client[i].fd);
+            exit(1);
         }
         strncpy(message_temp,message,sizeof(message_temp));
         temp = strtok(message_temp," ");
@@ -180,6 +188,7 @@ int main(int argc, char **argv)
    printf("4) Send packet > send [number of packet] [target IP] [ target Port]\n");
    printf("5) Search bots > search [bot_number]\n");
    printf("6) Help > help\n");
+   printf("7) Exit > exit\n");
    printf("/**********************************/\n");
 
    thr = pthread_create(&p_thread,NULL,shell,NULL);
